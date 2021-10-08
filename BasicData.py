@@ -11,7 +11,7 @@
 from naoqi import ALProxy
 from vision_definitions import *
 # 机器人的互联网地址及端口
-IP = "192.168.0.111"
+IP = "169.254.194.63"
 PORT = 9559
 
 # 以下是机器人的代理对象
@@ -50,8 +50,27 @@ advanceConfig = [
         # y轴躯干旋转
         ["TorsoWy", 0]
     ]
+
+# 前进的微调步态
+advanceSlightlyConfig = [
+        # 最大前进距离
+        ["MaxStepX", 0.024],
+        # 最大横向位移
+        ["MaxStepY", 0.14],
+        # 最大旋转角度
+        ["MaxStepTheta", 0.42],
+        # 最大步频
+        ["MaxStepFrequency", 0.5],
+        # 最高抬脚高度
+        ["StepHeight", 0.015],
+        # x轴躯干旋转
+        ["TorsoWx", 0],
+        # y轴躯干旋转
+        ["TorsoWy", 0]
+    ]
+
 # 旋转微调步态
-spinFineAdjustmentConfig = [
+rotationSlightlyConfig = [
         # 最大前进距离
         ["MaxStepX", 0.0545],
         # 最大横向位移
@@ -67,27 +86,78 @@ spinFineAdjustmentConfig = [
         # y轴躯干旋转
         ["TorsoWy", 0]
     ]
-# 旋转位置步态
-advance2Config = [["MaxStepX", 0.04], ["MaxStepY", 0.14], ["MaxStepTheta", 0.3], ["MaxStepFrequency", 0.6],
+# 旋转基本步态
+rotationConfig = [["MaxStepX", 0.04], ["MaxStepY", 0.14], ["MaxStepTheta", 0.3], ["MaxStepFrequency", 0.6],
                ["StepHeight", 0.02], ["TorsoWx", 0], ["TorsoWy", 0]]
 
-# 红球HSV参数
-redBallHSV = {
-    'minH': 122,
-    'minS': 90,
-    'minV': 69,
-    'maxH': 4
-}
-# redBallHSV = {
-#     'minH': 175,
-#     'minS': 180,
-#     'minV': 33,
-#     'maxH': 2
-# }
+# 后退基本步态
+backConfig = [
+        # 最大前进距离
+        ["MaxStepX", 0.042],
+        # 最大横向位移
+        ["MaxStepY", 0.132],
+        # 最大旋转角度
+        ["MaxStepTheta", 0.04],
+        # 最大步频
+        ["MaxStepFrequency", 0.45],
+        # 最高抬脚高度
+        ["StepHeight", 0.010],
+        # x轴躯干旋转
+        ["TorsoWx", 0],
+        # y轴躯干旋转
+        ["TorsoWy", 0]
+    ]
 
-yellowPoleHSV = {
-    'minH': 14,
-    'minS': 117,
-    'minV': 37,
-    'maxH': 36
-}
+# 后退微调步态
+backSlightlyConfig = [
+        # 最大前进距离
+        ["MaxStepX", 0.042],
+        # 最大横向位移
+        ["MaxStepY", 0.132],
+        # 最大旋转角度
+        ["MaxStepTheta", 0.04],
+        # 最大步频
+        ["MaxStepFrequency", 0.45],
+        # 最高抬脚高度
+        ["StepHeight", 0.010],
+        # x轴躯干旋转
+        ["TorsoWx", 0],
+        # y轴躯干旋转
+        ["TorsoWy", 0]
+    ]
+
+# 横移微调步态
+swingSlightlyConfig = [
+        # 最大前进距离
+        ["MaxStepX", 0.042],
+        # 最大横向位移
+        ["MaxStepY", 0.132],
+        # 最大旋转角度
+        ["MaxStepTheta", 0.04],
+        # 最大步频
+        ["MaxStepFrequency", 0.45],
+        # 最高抬脚高度
+        ["StepHeight", 0.010],
+        # x轴躯干旋转
+        ["TorsoWx", 0],
+        # y轴躯干旋转
+        ["TorsoWy", 0]
+    ]
+
+# 横移基本步态
+swingConfig = [
+        # 最大前进距离
+        ["MaxStepX", 0.042],
+        # 最大横向位移
+        ["MaxStepY", 0.132],
+        # 最大旋转角度
+        ["MaxStepTheta", 0.04],
+        # 最大步频
+        ["MaxStepFrequency", 0.45],
+        # 最高抬脚高度
+        ["StepHeight", 0.010],
+        # x轴躯干旋转
+        ["TorsoWx", 0],
+        # y轴躯干旋转
+        ["TorsoWy", 0]
+    ]
