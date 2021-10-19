@@ -19,7 +19,6 @@ import motion
 import numpy as np
 import vision_definitions as vd
 from naoqi import ALProxy
-import publicApi
 
 # sys.path.append("/home/meringue/Softwares/pynaoqi-sdk/") #naoqi directory
 sys.path.append("./")
@@ -109,7 +108,8 @@ class VisualBasis(NaoConfig):
             self.frameArray = np.frombuffer(frame[6], dtype=np.uint8).reshape([frame[1], frame[0], frame[2]])
         except IndexError:
             print "get image failed!"
-
+        except TypeError:
+            print frame
     def getFrameArray(self):
         """
         得到当前帧
@@ -456,6 +456,7 @@ class DetectRedBall(VisualBasis):
         使用从相机获取的帧更新球数据。
         最后要实现上面的所有功能，在类中再定义一个函数，把之前实现的各个模块封装在一起
 
+        :param minS1:
         :param cameraID:
         :param client:
         :param standState: ("standInit", default), "standInit" or "standUp".
@@ -471,7 +472,7 @@ class DetectRedBall(VisualBasis):
         maxHSV2 = np.array([180, 255, 255])
         self.updateFrame(client)
         minDist = int(self.frameHeight / 20.0)
-        minRadius = 5
+        # minRadius = 5
         maxRadius = int(self.frameHeight / 12.0)
         if colorSpace == "BGR":
             grayFrame = self.__getChannelAndBlur(color)
@@ -482,7 +483,7 @@ class DetectRedBall(VisualBasis):
         # cv2.imshow("bin frame", grayFrame)
         # cv2.imwrite("bin_frame.jpg", grayFrame)
         # cv2.waitKey(20)
-        circles = self.__findCircles(grayFrame, minDist, minRadius, maxRadius)
+        circles = self.__findCircles(grayFrame, minDist, 5, maxRadius)
         circle = self.__selectCircle(circles)
         # print("circle = ", circle.shape)
         if circle.shape[0] == 0:
@@ -585,7 +586,7 @@ class DetectRedBall(VisualBasis):
 
 class StickDetect(VisualBasis):
     """
-    derived from VisualBasics, used to detect the stick.
+    自 VisualBasics，用于检测黄杆。
     """
 
     def setParam(self, paramName=None, paramValue=None):
@@ -599,12 +600,12 @@ class StickDetect(VisualBasis):
         super(StickDetect, self).__init__(IP, PORT, cameraId, resolution)
         self.boundRect = []
         self.cropKeep = 1
-        self.stickAngle = 0.0  # rad
+        self.stickAngle = 0.0  # 弧度制
         self.writeFrame = writeFrame
 
     def __preprocess(self, minHSV, maxHSV, cropKeep, morphology):
         """
-        preprocess the current frame for stick detection.(binalization, crop etc.)
+        预处理当前帧以进行杆检测。（二值化、裁剪等）
 
         Args:
             minHSV: the lower limit for binalization.
@@ -635,7 +636,7 @@ class StickDetect(VisualBasis):
 
     def __findStick(self, frameBin, minPerimeter, minArea):
         """
-        find the yellow stick in the preprocessed frame.
+        在预处理的框架中找到黄杆。
 
         Args:
             frameBin: preprocessed frame.
@@ -679,11 +680,11 @@ class StickDetect(VisualBasis):
         except:
             print("Error when saveing current frame!")
 
-    def updateStickData(self, client="test", minH=27,minS=55,minV=115,
+    def updateStickData(self, client="test", minH=27, minS=55, minV=115,
                         maxH=45, cropKeep=0.75,
                         morphology=True, savePreprocessImg=False):
         """
-        更新来自指定相机的黄色棒数据。
+        更新来自指定相机的黄杆数据。
 
         :param client: client name
         :param minH:
@@ -715,12 +716,12 @@ class StickDetect(VisualBasis):
             cameraPosition = self.motionProxy.getPosition("Head", 2, True)
             cameraY = cameraPosition[5]
             self.stickAngle += cameraY
-            if self.writeFrame == True:
+            if self.writeFrame:
                 self.__writeFrame()
 
     def showStickPosition(self):
         """
-        show the stick  position in the current frame.
+        显示当前帧中的杆位置。
         """
         if self.boundRect == []:
             # print("no stick detected.")
@@ -733,7 +734,7 @@ class StickDetect(VisualBasis):
 
     def slider(self, client):
         """
-        slider for stick detection in HSV color space.
+        用于在 HSV 颜色空间中检测棒的滑块。
 
         Args:
             client: client name.
@@ -744,10 +745,10 @@ class StickDetect(VisualBasis):
 
         windowName = "slider for stick detection"
         cv2.namedWindow(windowName)
-        cv2.createTrackbar("minH", windowName, 27, 45, __nothing)
-        cv2.createTrackbar("minS", windowName, 55, 75, __nothing)
-        cv2.createTrackbar("minV", windowName, 115, 150, __nothing)
-        cv2.createTrackbar("maxH", windowName, 45, 70, __nothing)
+        cv2.createTrackbar("minH", windowName, 20, 150, __nothing)
+        cv2.createTrackbar("minS", windowName, 30, 180, __nothing)
+        cv2.createTrackbar("minV", windowName, 35, 150, __nothing)
+        cv2.createTrackbar("maxH", windowName, 30, 100, __nothing)
         while 1:
             self.updateFrame(client)
             minH = cv2.getTrackbarPos("minH", windowName)
@@ -756,9 +757,10 @@ class StickDetect(VisualBasis):
             maxH = cv2.getTrackbarPos("maxH", windowName)
             minHSV = np.array([minH, minS, minV])
             maxHSV = np.array([maxH, 255, 255])
-            self.updateStickData(client, minHSV, maxHSV, savePreprocessImg=True)
+            self.updateStickData(client, minH=minH, minS=minS, minV=minV, maxH=maxH, cropKeep=1, savePreprocessImg=True)
             cv2.imshow(windowName, self._frameBin)
             self.showStickPosition()
+            print self.stickAngle * 180 / math.pi
             k = cv2.waitKey(10) & 0xFF
             if k == 27:
                 break
@@ -783,7 +785,7 @@ class LandMarkDetect(NaoConfig):
 
     def updateLandMarkData(self, client="landMark"):
         """
-        update landMark information
+        更新地标信息
 
         Args:
             client: client name
@@ -796,7 +798,7 @@ class LandMarkDetect(NaoConfig):
         self.landMarkProxy.subscribe(client)
         markData = self.memoryProxy.getData("LandmarkDetected")
         self.cameraProxy.unsubscribe(client)
-        if (markData is None or len(markData) == 0):
+        if markData is None or len(markData) == 0:
             self.disX = 0
             self.disY = 0
             self.dist = 0
@@ -821,7 +823,7 @@ class LandMarkDetect(NaoConfig):
 
     def getLandMarkData(self):
         """
-        get landMark information.
+        获取地标信息。
 
         Return:
             a list of disX, disY, dis, and yaw angle.
@@ -838,15 +840,15 @@ class LandMarkDetect(NaoConfig):
         print("yaw angle = ", self.yawAngle * 180.0 / np.pi)
 
 
-
 if __name__ == '__main__':
-    IP = "169.254.2.57"
-    PORT=9559
+    from BasicData import IP
+
+    PORT = 9559
     # IP = "169.254.67.213"
     # IP = "169.254.143.164"
 
     visualBasis = VisualBasis(IP, cameraId=vd.kTopCamera, resolution=vd.kVGA)
-    ballDetect = DetectRedBall(IP,cameraId=vd.kTopCamera, resolution=vd.kVGA, writeFrame=True)
+    ballDetect = DetectRedBall(IP, cameraId=vd.kBottomCamera, resolution=vd.kVGA, writeFrame=True)
     stickDetect = StickDetect(IP, cameraId=vd.kTopCamera, resolution=vd.kVGA, writeFrame=True)
     landMarkDetect = LandMarkDetect(IP)
     motionProxy = ALProxy("ALMotion", IP, PORT)
@@ -869,18 +871,31 @@ if __name__ == '__main__':
     # visualBasis.postureProxy.goToPosture("StandInit", 0.5)
 
     motionProxy.wakeUp()
-    publicApi.grip()
-    publicApi.close_pole()
-    motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.05, 0.1)
-    stickDetect.slider("mm2")
-    while 1:
-        time1 = time.time()
-        ballDetect.updateBallData(client="mm2", colorSpace="HSV", fitting=True, minS1=180, minV1=33, maxH1=2, minH2=175)
-        # print(ballDetect.getBallInfoInImage())
-        time2 = time.time()
-        # print("update data time = ", time2-time1)
-        print ballDetect.ballData
-        print ballDetect.ballPosition
+    # publicApi.close_pole()
+    # motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.5, 0.5)
+    stickDetect.slider("qwe")
+    # ballDetect.sliderHSV("wer")
+    #
+
+    # while True:
+    #     landMarkDetect.updateLandMarkData("123")
+    #     print landMarkDetect.getLandMarkData()
+    # # while 1:
+    # #     time1 = time.time()
+    #     ballDetect.updateBallData(client="mm2", colorSpace="HSV", fitting=True, minS1=159, minV1=79, maxH1=2, minH2=172)
+    # #     # print(ballDetect.getBallInfoInImage())
+    # #     time2 = time.time()
+    # #     # print("update data time = ", time2-time1)
+    # #     print ballDetect.ballData
+    #     print ballDetect.ballPosition
+    #
+    # # while 1:
+    # #     time1 = time.time()
+    #     stickDetect.updateStickData(client="str1",minH=5,minS=60,minV=48,maxH=42,cropKeep=0.45)
+    # #     # print(ballDetect.getBallInfoInImage())
+    # #     time2 = time.time()
+    # #     # print("update data time = ", time2-time1)
+    #     print stickDetect.stickAngle*180/math.pi
 
     # while 1:
     #     stickDetect.updateStickData(client="xxx")

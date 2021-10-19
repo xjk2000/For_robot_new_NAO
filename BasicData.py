@@ -11,7 +11,7 @@
 from naoqi import ALProxy
 from vision_definitions import *
 # 机器人的互联网地址及端口
-IP = "169.254.194.63"
+IP = "169.254.203.231"
 PORT = 9559
 
 # 以下是机器人的代理对象
@@ -34,23 +34,31 @@ landmarkProxy = ALProxy("ALLandMarkDetection", IP, PORT)
 # 以下主要是基本的步态参数
 
 # 前进的基本步态
+# advanceConfig = [
+#         # 最大前进距离
+#         ["MaxStepX", 0.042],
+#         # 最大横向位移
+#         ["MaxStepY", 0.132],
+#         # 最大旋转角度
+#         ["MaxStepTheta", 0.04],
+#         # 最大步频
+#         ["MaxStepFrequency", 0.45],
+#         # 最高抬脚高度
+#         ["StepHeight", 0.010],
+#         # x轴躯干旋转
+#         ["TorsoWx", 0],
+#         # y轴躯干旋转
+#         ["TorsoWy", 0]
+#     ]
 advanceConfig = [
-        # 最大前进距离
-        ["MaxStepX", 0.042],
-        # 最大横向位移
-        ["MaxStepY", 0.132],
-        # 最大旋转角度
-        ["MaxStepTheta", 0.04],
-        # 最大步频
-        ["MaxStepFrequency", 0.45],
-        # 最高抬脚高度
-        ["StepHeight", 0.010],
-        # x轴躯干旋转
+        ["MaxStepX", 0.04],
+        ["MaxStepY", 0.145],
+        ["MaxStepTheta", 0.4],
+        ["MaxStepFrequency", 0.4],
+        ["StepHeight", 0.02],
         ["TorsoWx", 0],
-        # y轴躯干旋转
         ["TorsoWy", 0]
     ]
-
 # 前进的微调步态
 advanceSlightlyConfig = [
         # 最大前进距离
@@ -71,19 +79,12 @@ advanceSlightlyConfig = [
 
 # 旋转微调步态
 rotationSlightlyConfig = [
-        # 最大前进距离
-        ["MaxStepX", 0.0545],
-        # 最大横向位移
-        ["MaxStepY", 0.154],
-        # 最大旋转角度
-        ["MaxStepTheta", 0.04],
-        # 最大步频
-        ["MaxStepFrequency", 0.714],
-        # 最高抬脚高度
-        ["StepHeight", 0.01745],
-        # x轴躯干旋转
+        ["MaxStepX", 0.03],
+        ["MaxStepY", 0.14],
+        ["MaxStepTheta", 0.4],
+        ["MaxStepFrequency", 0.3],
+        ["StepHeight", 0.02],
         ["TorsoWx", 0],
-        # y轴躯干旋转
         ["TorsoWy", 0]
     ]
 # 旋转基本步态
@@ -146,18 +147,11 @@ swingSlightlyConfig = [
 
 # 横移基本步态
 swingConfig = [
-        # 最大前进距离
-        ["MaxStepX", 0.042],
-        # 最大横向位移
-        ["MaxStepY", 0.132],
-        # 最大旋转角度
-        ["MaxStepTheta", 0.04],
-        # 最大步频
-        ["MaxStepFrequency", 0.45],
-        # 最高抬脚高度
-        ["StepHeight", 0.010],
-        # x轴躯干旋转
+        ["MaxStepX", 0.04],
+        ["MaxStepY", 0.145],
+        ["MaxStepTheta", 0.4],
+        ["MaxStepFrequency", 0.35],
+        ["StepHeight", 0.02],
         ["TorsoWx", 0],
-        # y轴躯干旋转
         ["TorsoWy", 0]
     ]
