@@ -7,9 +7,7 @@
 @Version  : 1.0
 @Description : 
 """
-import math
 import threading
-import multiprocessing
 import time
 
 import BasicData as Bd
@@ -22,7 +20,7 @@ ballDetect = GolfVision.DetectRedBall(IP, cameraId=Bd.kBottomCamera, resolution=
 landMarkDetect = GolfVision.LandMarkDetect(IP)
 
 redBallHSV = [155, 49, 7, 122]
-yellowStickHSV = [8,117,69,42]
+yellowStickHSV = [8, 117, 69, 42]
 
 
 class GetBallInfoThread(threading.Thread):
@@ -62,7 +60,6 @@ class GetBallInfoThread(threading.Thread):
                 lock.release()
 
 
-
 def printData():
     while True:
         time.sleep(1)
@@ -99,9 +96,9 @@ def findBallData(searchTime=2):
 
 
 def findStickData(searchTime=1):
-    searchRange=-30*searchTime
+    searchRange = -30 * searchTime
     search = searchRange
-    while search<=-searchRange:
+    while search <= -searchRange:
         motionProxy.angleInterpolationWithSpeed("HeadYaw", func_angle(search), 0.8)
         time.sleep(3)
         stickDetect = GolfVision.StickDetect(IP, cameraId=Bd.kTopCamera, resolution=Bd.kVGA, writeFrame=False)
@@ -110,13 +107,13 @@ def findStickData(searchTime=1):
                                     minV=yellowStickHSV[2], maxH=yellowStickHSV[3],
                                     cropKeep=0.75, savePreprocessImg=False)
         stick = stickDetect.stickAngle
-        if stick !=0:
+        if stick != 0:
             motionProxy.angleInterpolationWithSpeed('HeadYaw', 0, 0.5)
             print "stickInfo", stick
-            motionProxy.moveTo(0,0,(func_angle(search)+stick)/3,Bd.rotationSlightlyConfig)
+            motionProxy.moveTo(0, 0, (func_angle(search) + stick) / 3, Bd.rotationSlightlyConfig)
             return
         else:
-            search+=30
+            search += 30
 
 
 def field_1_1():
@@ -187,7 +184,7 @@ def field_1_3():
         motionProxy.moveTo(1.2, 0, 0, Bd.advanceConfig)
     else:
         motionProxy.moveTo(1.2, 0, stickDetect.stickAngle, Bd.advanceConfig)
-    motionProxy.moveTo(0,-0.3,0,Bd.swingConfig)
+    motionProxy.moveTo(0, -0.3, 0, Bd.swingConfig)
 
 
 def field_2_1():
@@ -438,8 +435,8 @@ def field_hexagon():
         print "stick", stickDetect.stickAngle
         while True:
             # 不适合击球
-            print "stick--", stickDetect.stickAngle,"******************"
-            RangeTime=0
+            print "stick--", stickDetect.stickAngle, "******************"
+            RangeTime = 0
             stickDetect = GolfVision.StickDetect(IP, cameraId=Bd.kTopCamera, resolution=Bd.kVGA, writeFrame=False)
             stickDetect.updateStickData("field_hh", minH=yellowStickHSV[0], minS=yellowStickHSV[1],
                                         minV=yellowStickHSV[2], maxH=yellowStickHSV[3],
@@ -452,7 +449,7 @@ def field_hexagon():
                                             minV=yellowStickHSV[2], maxH=yellowStickHSV[3],
                                             cropKeep=0.75, savePreprocessImg=False)
                 print "stick----", stickDetect.stickAngle
-                if stickDetect.stickAngle!=0:
+                if stickDetect.stickAngle != 0:
                     break
                 time.sleep(0.5)
             stickDetect = GolfVision.StickDetect(IP, cameraId=Bd.kTopCamera, resolution=Bd.kVGA, writeFrame=False)
@@ -518,7 +515,7 @@ if __name__ == '__main__':
                     if memoryProxy.getData("FrontTactilTouched") == 1:
                         motionProxy.angleInterpolationWithSpeed('HeadPitch', 0, 0.5)
                         motionProxy.moveTo(0.90, 0.0, func_angle(-20), Bd.advanceConfig)
-                        motionProxy.moveTo(0.2, 0.0,0, Bd.advanceConfig)
+                        motionProxy.moveTo(0.2, 0.0, 0, Bd.advanceConfig)
                         lock = threading.Condition()
                         getBallInfoThread = GetBallInfoThread(name="for-field01-")
                         getBallInfoThread.start()
