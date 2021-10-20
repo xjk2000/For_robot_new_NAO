@@ -487,21 +487,20 @@ def field_hexagon():
         # 差不多可以击球了
         motionProxy.angleInterpolationWithSpeed('HeadPitch', 0.5, 0.5)
         time.sleep(0.5)
-        motionProxy.moveTo(0,0,func_angle(-90),Bd.rotationConfig)
-        motionProxy.moveTo(-0.1,0,0,Bd.backConfig)
-        motionProxy.moveTo(0,0.1,0,Bd.rotationConfig)
         while not 0.10 < ballDetect.ballPosition["disX"] < 0.12 and ballDetect.ballPosition["disX"] != 0:
             lock.acquire()
             print "ball==>", ballDetect.ballPosition
             if ballDetect.ballPosition["disX"] == 0:
-                motionProxy.moveTo(-0.05, 0, 0, Bd.backSlightlyConfig)
+                motionProxy.moveTo(-0.05, ballDetect.ballPosition["disY"], 0, Bd.backSlightlyConfig)
             else:
                 if ballDetect.ballPosition["disX"] < 1.0:
-                    motionProxy.moveTo(0.02, 0, 0, Bd.advanceSlightlyConfig)
+                    motionProxy.moveTo(0.02, ballDetect.ballPosition["disY"], 0, Bd.advanceSlightlyConfig)
                 else:
-                    motionProxy.moveTo(0.03, 0, 0, Bd.advanceSlightlyConfig)
+                    motionProxy.moveTo(0.03, ballDetect.ballPosition["disY"], 0, Bd.advanceSlightlyConfig)
             time.sleep(0.3)
             lock.release()
+        lock.acquire()
+        motionProxy.moveTo(0, ballDetect.ballPosition["disY"],0,Bd.swingSlightlyConfig)
         motionProxy.angleInterpolationWithSpeed('HeadPitch', 0, 0.5)
         break
 
@@ -541,7 +540,6 @@ if __name__ == '__main__':
                             t4.start()
                             t4.join()
                             ttsProxy.say("击球")
-                            motionProxy.moveTo(0,0,func_angle(90),Bd.rotationConfig)
 
                     if memoryProxy.getData("MiddleTactilTouched") == 1:
                         lock = threading.Condition()
@@ -567,7 +565,6 @@ if __name__ == '__main__':
                             t5.start()
                             t5.join()
                             ttsProxy.say("击球")
-                            motionProxy.moveTo(0,0,func_angle(90),Bd.rotationConfig)
 
                     if memoryProxy.getData("RearTactilTouched") == 1:
                         lock = threading.Condition()
@@ -589,7 +586,6 @@ if __name__ == '__main__':
                             t4.start()
                             t4.join()
                             ttsProxy.say("击球")
-                            motionProxy.moveTo(0,0,func_angle(90),Bd.rotationConfig)
 
     except:
         print Exception
