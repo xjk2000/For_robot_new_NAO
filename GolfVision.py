@@ -848,7 +848,7 @@ if __name__ == '__main__':
     # IP = "169.254.143.164"
 
     visualBasis = VisualBasis(IP, cameraId=vd.kTopCamera, resolution=vd.kVGA)
-    ballDetect = DetectRedBall(IP, cameraId=vd.kBottomCamera, resolution=vd.kVGA, writeFrame=True)
+    ballDetect = DetectRedBall(IP, cameraId=vd.kTopCamera, resolution=vd.kVGA, writeFrame=True)
     stickDetect = StickDetect(IP, cameraId=vd.kTopCamera, resolution=vd.kVGA, writeFrame=True)
     landMarkDetect = LandMarkDetect(IP)
     motionProxy = ALProxy("ALMotion", IP, PORT)
@@ -871,10 +871,11 @@ if __name__ == '__main__':
     # visualBasis.postureProxy.goToPosture("StandInit", 0.5)
 
     motionProxy.wakeUp()
-    # publicApi.close_pole()
+    import publicApi
+    publicApi.close_pole()
     # motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.5, 0.5)
-    stickDetect.slider("qwe")
-    # ballDetect.sliderHSV("wer")
+    # stickDetect.slider("qwe")
+    ballDetect.sliderHSV("wer")
     #
 
     # while True:
