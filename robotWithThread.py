@@ -559,7 +559,7 @@ if __name__ == '__main__':
                         close_pole()
                         while (hitTheBallSuccessfully()):
                             adjustTheShot()
-                            firstShotOfFieldTwo()
+                            ttsProxy.say("击球")
                             close_pole()
 
                         t2 = threading.Thread(target=field_1_2)
