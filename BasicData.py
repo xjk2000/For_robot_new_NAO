@@ -11,7 +11,7 @@
 from naoqi import ALProxy
 from vision_definitions import *
 # 机器人的互联网地址及端口
-IP = "169.254.40.74"
+IP = "169.254.241.43"
 PORT = 9559
 
 # 以下是机器人的代理对象
@@ -93,20 +93,13 @@ rotationConfig = [["MaxStepX", 0.03], ["MaxStepY", 0.13], ["MaxStepTheta", 0.4],
 
 # 后退基本步态
 backConfig = [
-        # 最大前进距离
-        ["MaxStepX", 0.042],
-        # 最大横向位移
-        ["MaxStepY", 0.132],
-        # 最大旋转角度
-        ["MaxStepTheta", 0.04],
-        # 最大步频
-        ["MaxStepFrequency", 0.45],
-        # 最高抬脚高度
-        ["StepHeight", 0.010],
-        # x轴躯干旋转
-        ["TorsoWx", 0],
-        # y轴躯干旋转
-        ["TorsoWy", 0]
+        ["MaxStepX", 0.035],
+        ["MaxStepY", 0.145],
+        ["MaxStepTheta", 0.35],
+        ["MaxStepFrequency", 0.3],
+        ["StepHeight", 0.02],
+        ["TorsoWx", 0.05],
+        ["TorsoWy", -0.05]
     ]
 
 # 后退微调步态
