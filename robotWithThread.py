@@ -15,14 +15,14 @@ import GolfVision
 from BasicData import IP
 from BasicData import motionProxy, memoryProxy, ttsProxy
 import GolfVisionModify
-from publicApi import grip, close_pole, func_angle, fieldOneFirstShot,fieldTwoFirstShot
+from publicApi import grip, close_pole, func_angle, fieldBasicShot,fieldTwoFirstShot
 
 ballDetect = GolfVision.DetectRedBall(IP, cameraId=Bd.kBottomCamera, resolution=Bd.kVGA, writeFrame=False)
 landMarkDetect = GolfVision.LandMarkDetect(IP)
 
 # redBallHSV = [155, 49, 7, 122]
 # redBallHSV = [129, 78, 7, 106]
-redBallHSV = [145, 32, 4, 166]
+redBallHSV = [151, 34, 8, 118]
 yellowStickHSV = [4, 73, 93, 32]
 
 
@@ -67,10 +67,9 @@ def overallBehaviorForBatting(battingFunction):
     # 击球
     battingFunction()
     close_pole()
-    while hitTheBallSuccessfully():
-        adjustTheShot()
-        battingFunction()
-        close_pole()
+    motionProxy.angleInterpolationWithSpeed('HeadPitch', 0.5, 0.5)
+    motionProxy.angleInterpolationWithSpeed('HeadPitch', 0, 0.5)
+
 
 
 def findBallData(advanceTime, searchTime=1):
@@ -78,9 +77,11 @@ def findBallData(advanceTime, searchTime=1):
     search = searchRange
     while search <= -searchRange:
         motionProxy.angleInterpolationWithSpeed("HeadYaw", func_angle(search), 0.8)
-        time.sleep(1)
+        print "========================"
         global ballDetect
+        print "================================>"
         lock.acquire()
+        print "================================================"
         findBallInfo = ballDetect.ballPosition
         if findBallInfo['disX'] != 0 or findBallInfo['disY'] != 0:
             motionProxy.angleInterpolationWithSpeed('HeadYaw', 0, 0.5)
@@ -130,21 +131,6 @@ def findStickData(searchTime=1,findTimes=5):
     return findStickData(1,findTimes-1)
 
 
-def hitTheBallSuccessfully():
-    """
-    判断击球是否成功
-    :return: True 表示击球失败  False表示击球成功
-    """
-    motionProxy.angleInterpolationWithSpeed('HeadPitch', 0.5, 0.5)
-    time.sleep(0.5)
-    global ballDetect
-    if not (ballDetect.ballPosition["disY"] == 0 and ballDetect.ballPosition["disX"] == 0):
-        motionProxy.angleInterpolationWithSpeed('HeadPitch', 0, 0.5)
-        return True
-    motionProxy.angleInterpolationWithSpeed('HeadPitch', 0, 0.5)
-    return False
-
-
 def adjustTheShot():
     """
     调整击球位置
@@ -153,6 +139,7 @@ def adjustTheShot():
     global ballDetect
     motionProxy.angleInterpolationWithSpeed('HeadPitch', 0.5, 0.5)
     time.sleep(2)
+    # motionProxy.moveTo(0,0,func_angle(-3),Bd.rotationSlightlyConfig)
     lock.acquire()
     print ballDetect.ballPosition
     if ballDetect.ballPosition["disY"] == 0 and ballDetect.ballPosition["disX"] == 0:
@@ -165,20 +152,21 @@ def adjustTheShot():
         motionProxy.moveTo(0, ballDetect.ballPosition["disY"], 0, Bd.swingSlightlyConfig)
         time.sleep(2)
         lock.release()
-    while not (0.14 < ballDetect.ballPosition["disX"] < 0.15 and ballDetect.ballPosition["disX"] != 0):
+    while not (0.145 < ballDetect.ballPosition["disX"] < 0.155 and ballDetect.ballPosition["disX"] != 0):
         lock.acquire()
         print "==>",ballDetect.ballPosition
-        if ballDetect.ballPosition["disX"] < 0.14:
+        if ballDetect.ballPosition["disX"] < 0.145:
             motionProxy.moveTo(-0.02, 0, 0, Bd.backSlightlyConfig)
             if not -0.01 < ballDetect.ballPosition["disY"] < 0.01:
                 motionProxy.moveTo(0, ballDetect.ballPosition["disY"], 0, Bd.swingSlightlyConfig)
             lock.release()
         else:
-            if 0.14 < ballDetect.ballPosition["disX"] < 0.15 and ballDetect.ballPosition["disX"]!=0:
+            if 0.145 < ballDetect.ballPosition["disX"] < 0.155 and ballDetect.ballPosition["disX"]!=0:
                 break
             motionProxy.moveTo(0.03, 0, 0, Bd.advanceSlightlyConfig)
             time.sleep(2)
             lock.release()
+
     motionProxy.angleInterpolationWithSpeed('HeadPitch', 0, 0.5)
 
 
@@ -196,10 +184,11 @@ def field_1_1():
     lock.release()
     motionProxy.moveTo(0, 0, func_angle(-90), Bd.rotationConfig)
     motionProxy.moveTo(-0.2, 0, 0, Bd.backConfig)
-    motionProxy.moveTo(0, 0.26, 0, Bd.swingConfig)
+    motionProxy.moveTo(0, 0.26, func_angle(5), Bd.swingConfig)
     motionProxy.angleInterpolationWithSpeed('HeadPitch', 0.5, 0.5)
     time.sleep(2)
     lock.acquire()
+    # motionProxy.moveTo(0, 0, func_angle(-10), Bd.rotationConfig)
     if ballDetect.ballPosition["disY"] == 0 and ballDetect.ballPosition["disX"] == 0:
         motionProxy.moveTo(-0.03, 0, 0, Bd.backSlightlyConfig)
     lock.release()
@@ -209,9 +198,9 @@ def field_1_1():
         motionProxy.moveTo(0, ballDetect.ballPosition["disY"], 0, Bd.swingSlightlyConfig)
         time.sleep(2)
         lock.release()
-    while not (0.14 < ballDetect.ballPosition["disX"] < 0.15 and ballDetect.ballPosition["disX"] != 0):
+    while not (0.145 < ballDetect.ballPosition["disX"] < 0.155 and ballDetect.ballPosition["disX"] != 0):
         lock.acquire()
-        if ballDetect.ballPosition["disX"] < 0.14:
+        if ballDetect.ballPosition["disX"] < 0.145:
             motionProxy.moveTo(-0.02, 0, 0, Bd.backSlightlyConfig)
             if not -0.01 < ballDetect.ballPosition["disY"] < 0.01:
                 motionProxy.moveTo(0, ballDetect.ballPosition["disY"], 0, Bd.swingSlightlyConfig)
@@ -295,7 +284,7 @@ def field_2_1():
     motionProxy.moveTo(0, 0, func_angle(-95), Bd.rotationConfig)
     motionProxy.moveTo(-0.23, 0, 0, Bd.backConfig)
     motionProxy.moveTo(0, 0.26, func_angle(10), Bd.swingConfig) # func_angle(-5)加偏角
-    motionProxy.moveTo(0,0,func_angle(-15),Bd.rotationConfig)
+    motionProxy.moveTo(0,0,func_angle(-6),Bd.rotationConfig)
     motionProxy.angleInterpolationWithSpeed('HeadPitch', 0.5, 0.5)
     print "ball", ballDetect.ballPosition
     if ballDetect.ballPosition == {'disX': 0, 'disY': 0, 'angle': 0}:
@@ -329,7 +318,7 @@ def field_2_4():
         else:
             motionProxy.moveTo(0.5, 0, stickDetect.stickAngle, Bd.advanceConfig)
 
-    motionProxy.moveTo(0, 0, func_angle(-15), Bd.swingConfig)
+    motionProxy.moveTo(0, 0, func_angle(-10), Bd.swingConfig)
 
 
 def field_3_1():
@@ -356,12 +345,12 @@ def field_3_1():
         else:
             motionProxy.moveTo(0, ballDetect.ballPosition["disY"], 0, Bd.swingSlightlyConfig)
         lock.release()
-    while not (0.14 < ballDetect.ballPosition["disX"] < 0.15 and ballDetect.ballPosition["disX"] != 0):
+    while not (0.145 < ballDetect.ballPosition["disX"] < 0.15 and ballDetect.ballPosition["disX"] != 0):
         lock.acquire()
         print "disX", ballDetect.ballPosition["disX"]
         if ballDetect.ballPosition["disX"] == 0:
             motionProxy.moveTo(0.05, 0, 0, Bd.backSlightlyConfig)
-        elif ballDetect.ballPosition["disX"] < 0.14:
+        elif ballDetect.ballPosition["disX"] < 0.145:
             motionProxy.moveTo(0.02, 0, 0, Bd.backSlightlyConfig)
         else:
             motionProxy.moveTo(0.03, 0, 0, Bd.advanceSlightlyConfig)
@@ -402,12 +391,12 @@ def field_3_2():
         else:
             motionProxy.moveTo(0, ballDetect.ballPosition["disY"], 0, Bd.swingSlightlyConfig)
         lock.release()
-    while not (0.14 < ballDetect.ballPosition["disX"] < 0.15 and ballDetect.ballPosition["disX"] != 0):
+    while not (0.145 < ballDetect.ballPosition["disX"] < 0.15 and ballDetect.ballPosition["disX"] != 0):
         lock.acquire()
         print "disX", ballDetect.ballPosition["disX"]
         if ballDetect.ballPosition["disX"] == 0:
             motionProxy.moveTo(0.05, 0, 0, Bd.backSlightlyConfig)
-        elif ballDetect.ballPosition["disX"] < 0.14:
+        elif ballDetect.ballPosition["disX"] < 0.145:
             motionProxy.moveTo(0.02, 0, 0, Bd.backSlightlyConfig)
         else:
             motionProxy.moveTo(0.03, 0, 0, Bd.advanceSlightlyConfig)
@@ -442,8 +431,16 @@ def field_hexagon():
     global yellowStickHSV
     motionProxy.angleInterpolationWithSpeed('HeadPitch', 0.2, 0.5)
     time.sleep(0.3)
-    findBallData(1)
+    ballDetect_longDistance = GolfVisionModify.DetectRedBall(IP, cameraId=Bd.kTopCamera, resolution=Bd.kVGA)
+    ballDetect_longDistance.updateBallData("yuanjulices")
+    print "ball_long ", ballDetect_longDistance.ballPosition["angle"]
+    if ballDetect.ballPosition == {'disX': 0, 'disY': 0, 'angle': 0} and ballDetect_longDistance.ballPosition["angle"]!=0:
+        print "========="
+        motionProxy.moveTo(0,0,ballDetect_longDistance.ballPosition["angle"],Bd.rotationConfig)
+        motionProxy.moveTo(0.3,0,0,Bd.advanceConfig)
+
     print "----------------"
+    findBallData(1)
     lock.acquire()
     print "ball", ballDetect.ballPosition
     motionProxy.angleInterpolationWithSpeed('HeadPitch', 0.3, 0.5)
@@ -528,7 +525,7 @@ def field_hexagon():
         # 差不多可以击球了
         motionProxy.angleInterpolationWithSpeed('HeadPitch', 0.5, 0.5)
         time.sleep(0.5)
-        motionProxy.moveTo(0, 0, func_angle(-90), Bd.rotationConfig)
+        motionProxy.moveTo(0, 0, func_angle(-70), Bd.rotationConfig)
         motionProxy.moveTo(-0.25, 0, 0, Bd.backConfig)
         motionProxy.moveTo(0, 0.15, 0, Bd.rotationConfig)
         adjustTheShot()
@@ -551,6 +548,8 @@ if __name__ == '__main__':
                     if memoryProxy.getData("FrontTactilTouched") == 1:
 
                         motionProxy.angleInterpolationWithSpeed('HeadPitch', 0, 0.5) # 头部回正
+                        ttsProxy.say("first begin")
+
                         if jqr == "nao5":
                             motionProxy.moveTo(0.90, 0.0, func_angle(0), Bd.advanceConfig) # nao5
                         elif jqr == "nao6":
@@ -562,7 +561,7 @@ if __name__ == '__main__':
                         t1 = threading.Thread(target=field_1_1)
                         t1.start()
                         t1.join()
-                        overallBehaviorForBatting(fieldOneFirstShot)
+                        overallBehaviorForBatting(fieldBasicShot)
 
                         t2 = threading.Thread(target=field_1_2)
                         t2.start()
@@ -574,14 +573,15 @@ if __name__ == '__main__':
                             t4 = threading.Thread(target=field_hexagon)
                             t4.start()
                             t4.join()
-                            overallBehaviorForBatting(fieldOneFirstShot)
+                            overallBehaviorForBatting(fieldBasicShot)
                             motionProxy.moveTo(0, 0, func_angle(90), Bd.rotationConfig)
 
                     if memoryProxy.getData("MiddleTactilTouched") == 1:
                         motionProxy.angleInterpolationWithSpeed('HeadPitch', 0, 0.5) # 头部回正
                         lock = threading.Condition()
-                        getBallInfoThread = GetBallInfoThread(name="f2f2f2f2f2")
+                        getBallInfoThread = GetBallInfoThread(name="2222fff2222")
                         getBallInfoThread.start()
+                        ttsProxy.say("second begin")
                         t1 = threading.Thread(target=field_2_1)
                         t1.start()
                         t1.join()
@@ -600,11 +600,13 @@ if __name__ == '__main__':
                             t5 = threading.Thread(target=field_hexagon)
                             t5.start()
                             t5.join()
-                            overallBehaviorForBatting(fieldTwoFirstShot)
+                            overallBehaviorForBatting(fieldBasicShot)
                             motionProxy.moveTo(0, 0, func_angle(90), Bd.rotationConfig)
 
                     if memoryProxy.getData("RearTactilTouched") == 1:
                         motionProxy.angleInterpolationWithSpeed('HeadPitch', 0, 0.5) # 头部回正
+                        ttsProxy.say("third begin")
+
                         lock = threading.Condition()
                         getBallInfoThread = GetBallInfoThread(name="f3f3f3f3f3")
                         getBallInfoThread.start()
