@@ -748,7 +748,7 @@ class StickDetect(VisualBasis):
         # rect = self.__findStick(frameBin, minPerimeter, minArea) """
         img = self.frameArray
         hue_image = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        low_range = np.array([11, 150, 46])  # 通过实测，调整了S的范围
+        low_range = np.array([11, 150, 20])  # 通过实测，调整了S的范围
         high_range = np.array([34, 255, 255])
         mask = cv2.inRange(hue_image, low_range, high_range)
         mask = cv2.erode(mask, np.ones((5, 5)), iterations=1)

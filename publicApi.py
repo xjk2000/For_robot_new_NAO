@@ -42,7 +42,7 @@ def grip():
     move_time = []
 
     joints_name.append("RHand")
-    angle.append([func_angle(100), func_angle(3)])
+    angle.append([func_angle(100), func_angle(2)])
     move_time.append([2.3, 8.3])
 
     joints_name.append("RShoulderPitch")
@@ -219,10 +219,9 @@ def close_pole():
     moPr.angleInterpolation(joints_name, angle, move_time, True)
 
 
-def firstShotOfFieldTwo():
+def fieldBasicShot():
     """
-    场地二第一次击球
-
+    基本击球打法
     :return:
     """
     joints_name = []
@@ -230,7 +229,7 @@ def firstShotOfFieldTwo():
     move_time = []
 
     joints_name.append("RShoulderPitch")
-    angle.append([func_angle(80), func_angle(36), func_angle(43)])
+    angle.append([func_angle(80), func_angle(40), func_angle(46)])
     move_time.append([3.5, 4.5, 4.9])
 
     joints_name.append("RShoulderRoll")
@@ -242,7 +241,7 @@ def firstShotOfFieldTwo():
     move_time.append([3.5, 4.5, 4.9])
 
     joints_name.append("RElbowRoll")
-    angle.append([func_angle(2), func_angle(38), func_angle(50)])
+    angle.append([func_angle(2), func_angle(41), func_angle(53)])
     move_time.append([3.5, 4.5, 4.9])
 
     joints_name.append("RWristYaw")
@@ -253,39 +252,9 @@ def firstShotOfFieldTwo():
     moPr.angleInterpolation(joints_name, angle, move_time, True)
 
 
-
-def forwardHit():
-    joints_name = []
-    angle = []
-    move_time = []
-
-    joints_name.append("RShoulderPitch")
-    angle.append([func_angle(70), func_angle(6),func_angle(34.1)])
-    move_time.append([3.5, 4.5,5.5])
-
-    joints_name.append("RShoulderRoll")
-    angle.append([func_angle(-65), func_angle(-10.80),func_angle(3.0)])
-    move_time.append([3.5, 4.5,5.5])
-
-    joints_name.append("RElbowYaw")
-    angle.append([func_angle(80), func_angle(29.4),func_angle(11.7)])
-    move_time.append([3.5, 4.5,5.5])
-
-    joints_name.append("RElbowRoll")
-    angle.append([func_angle(47), func_angle(73.1),func_angle(67.2)])
-    move_time.append([3.5, 4.5,5.5])
-
-    joints_name.append("RWristYaw")
-    angle.append([func_angle(-21), func_angle(6.2), func_angle(35.6),func_angle(9.6)])
-    move_time.append([3.5, 4.5, 5.5,5.8])
-
-    moPr.setMoveArmsEnabled(False, False)
-    moPr.angleInterpolation(joints_name, angle, move_time, True)
-
-
-def fieldOneFirstShot():
+def fieldThreeFirstShot():
     """
-    场地二击球
+    基本击球打法
     :return:
     """
     joints_name = []
@@ -293,24 +262,24 @@ def fieldOneFirstShot():
     move_time = []
 
     joints_name.append("RShoulderPitch")
-    angle.append([func_angle(80), func_angle(36), func_angle(43)])
-    move_time.append([3.5, 4.5, 4.9])
+    angle.append([func_angle(80), func_angle(40), func_angle(46)])
+    move_time.append([3.5, 4.5, 5.2])
 
     joints_name.append("RShoulderRoll")
     angle.append([func_angle(-54), func_angle(-42), func_angle(18)])
-    move_time.append([3.5, 4.5, 4.9])
+    move_time.append([3.5, 4.5, 5.2])
 
     joints_name.append("RElbowYaw")
     angle.append([func_angle(12), func_angle(40), func_angle(100)])
-    move_time.append([3.5, 4.5, 4.9])
+    move_time.append([3.5, 4.5, 5.2])
 
     joints_name.append("RElbowRoll")
-    angle.append([func_angle(2), func_angle(38), func_angle(50)])
-    move_time.append([3.5, 4.5, 4.9])
+    angle.append([func_angle(2), func_angle(41), func_angle(53)])
+    move_time.append([3.5, 4.5, 5.2])
 
     joints_name.append("RWristYaw")
     angle.append([func_angle(47), func_angle(-30), func_angle(-12), func_angle(41)])
-    move_time.append([3.5, 4.5, 4.7, 4.9])
+    move_time.append([3.5, 4.5, 4.9, 5.2])
 
     moPr.setMoveArmsEnabled(False, False)
     moPr.angleInterpolation(joints_name, angle, move_time, True)
@@ -318,7 +287,7 @@ def fieldOneFirstShot():
 
 def fieldTwoFirstShot():
     """
-    场地一击球
+    场地二第一杆击球
     :return:
     """
     joints_name = []
@@ -343,7 +312,7 @@ def fieldTwoFirstShot():
 
     joints_name.append("RWristYaw")
     angle.append([func_angle(47), func_angle(-30), func_angle(-12), func_angle(51)])
-    move_time.append([3.5, 4.5, 4.7, 4.9])
+    move_time.append([3.5, 4.5, 4.7, 4.88])
 
     moPr.setMoveArmsEnabled(False, False)
     moPr.angleInterpolation(joints_name, angle, move_time, True)
@@ -460,3 +429,95 @@ def battingChange():
 
     moPr.setMoveArmsEnabled(False, False)
     moPr.angleInterpolation(names, keys, times, True)
+
+
+def forwardHit():
+    joints_name = []
+    angle = []
+    move_time = []
+
+    joints_name.append("RShoulderPitch")
+    angle.append([func_angle(100), func_angle(15)])
+    # func_angle(5), func_angle(-5), func_angle(50), func_angle(91)])
+    move_time.append([2.5, 3.5])
+
+    joints_name.append("RShoulderRoll")
+    angle.append([func_angle(0), func_angle(-30), func_angle(-30), func_angle(13)])
+    # func_angle(1), func_angle(-60), func_angle(-65), func_angle(-17)])
+    move_time.append([1.5, 2, 5.5, 7])  # 3.5
+
+    joints_name.append("RElbowYaw")
+    angle.append([func_angle(119.5), func_angle(0)])
+    # func_angle(94.5), func_angle(40), func_angle(11), func_angle(66)])
+    move_time.append([5.5, 7])
+
+    joints_name.append("RElbowRoll")
+    angle.append([func_angle(2), func_angle(88.5)])
+    # func_angle(57.1), func_angle(34.5), func_angle(6), func_angle(3)])
+    move_time.append([3.5, 4.5])
+
+    joints_name.append("RWristYaw")
+    angle.append([func_angle(-10), func_angle(-25), func_angle(-50), func_angle(45), func_angle(15)])
+    # func_angle(60), func_angle(30), func_angle(35), func_angle(35)])
+    move_time.append([2, 2.5, 4.5, 7, 7.5])
+
+    # 脚步动作
+    joints_name.append("LHipYawPitch")
+    angle.append([func_angle(-0.2)])
+    move_time.append([1.08])
+
+    joints_name.append("LKneePitch")
+    angle.append([func_angle(52.8)])
+    move_time.append([1.08])
+
+    joints_name.append("LAnklePitch")
+    angle.append([func_angle(-30.3)])
+    move_time.append([1.08])
+
+    joints_name.append("LAnkleRoll")
+    angle.append([func_angle(-0.3)])
+    move_time.append([1.08])
+
+    joints_name.append("LHipPitch")
+    angle.append([func_angle(-33)])
+    move_time.append([1.08])
+
+    joints_name.append("LHipRoll")
+    angle.append([func_angle(0.4)])
+    move_time.append([1.08])
+
+    joints_name.append("RHipRoll")
+    angle.append([func_angle(0.4)])
+    move_time.append([1.08])
+
+    joints_name.append("RHipPitch")
+    angle.append([func_angle(-33)])
+    move_time.append([1.08])
+
+    joints_name.append("RHipYawPitch")
+    angle.append([func_angle(-0.2)])
+    move_time.append([1.08])
+
+    joints_name.append("RKneePitch")
+    angle.append([func_angle(52.8)])
+    move_time.append([1.08])
+
+    joints_name.append("RAnklePitch")
+    angle.append([func_angle(-30.3)])
+    move_time.append([1.08])
+
+    joints_name.append("RAnkleRoll")
+    angle.append([func_angle(-0.3)])
+    move_time.append([1.08])
+
+    # 头部动作
+    joints_name.append("HeadYaw")
+    angle.append([0.0])
+    move_time.append([1.08])
+
+    joints_name.append("HeadPitch")
+    angle.append([func_angle(-30)])
+    move_time.append([1.08])
+
+    moPr.setMoveArmsEnabled(False, False)
+    moPr.angleInterpolation(joints_name, angle, move_time, True)

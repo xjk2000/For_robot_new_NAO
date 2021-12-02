@@ -11,7 +11,7 @@
 from naoqi import ALProxy
 from vision_definitions import *
 # 机器人的互联网地址及端口
-IP = "169.254.241.43"
+IP = "169.254.254.24"
 PORT = 9559
 
 # 以下是机器人的代理对象

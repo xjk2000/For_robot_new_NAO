@@ -15,155 +15,95 @@ from publicApi import func_angle, grip,close_pole
 
 
 def shotTest():
-    """
-    右手向左轻击击球,并收球
-    :return:
-    """
-    names = []
-    keys = []
-    times = []
-
-    names.append("RElbowRoll")
-    times.append([0.8, 1.5, 3.0, 4.5])
-    keys.append([2.5 * math.pi / 180.0, 31.5 * math.pi / 180.0, 82.7 * math.pi / 180.0,
-                 86.8 * math.pi / 180.0])  # -69.1  红-86.1 -86.4
-
-    names.append("RElbowYaw")
-    times.append([0.8, 1.5, 3.0, 4.5])
-    keys.append([101.1 * math.pi / 180.0, 61.8 * math.pi / 180.0, 48.7 * math.pi / 180.0,
-                 0.2 * math.pi / 180.0])  # -30.8 红 -8.6 -2.6
-
-    names.append("RShoulderPitch")
-    times.append([0.8, 1.5, 3.0, 4.5])
-    keys.append(
-        [61.3 * math.pi / 180.0, 0.3 * math.pi / 180.0, 9.4 * math.pi / 180.0, -1.7 * math.pi / 180.0])  # -5.0 红 7.8 1
-
-    names.append("RShoulderRoll")
-    times.append([0.8, 1.5, 3.0, 4.5])
-    keys.append([-50.1 * math.pi / 180.0, -3.2 * math.pi / 180.0, 15.9 * math.pi / 180.0,
-                 8.8 * math.pi / 180.0])  # -2.3 -5.0 2.5
-
-    names.append("RWristYaw")
-    times.append([0.8, 1.5, 3.0, 4.5])
-    keys.append([-3.9 * math.pi / 180.0, -64.5 * math.pi / 180.0, 51.8 * math.pi / 180.0,
-                 78.6 * math.pi / 180.0])  # -45.5#-68.6
-
-    ##    names.append("LElbowRoll")
-    ##    times.append([1.5,3.0,4.5])
-    ##    keys.append([-31.5*math.pi/180.0, -69.1*math.pi/180.0, -86.4*math.pi/180.0])
-    ##
-    ##    names.append("LElbowYaw")
-    ##    times.append([1.5,3.0,4.5])
-    ##    keys.append([-61.8*math.pi/180.0,-30.8*math.pi/180.0, -2.6*math.pi/180.0])
-    ##
-    ##    names.append("LShoulderPitch")
-    ##    times.append([1.5,3.0,4.5])
-    ##    keys.append([0.3*math.pi/180.0,-5.0*math.pi/180.0,1.6*math.pi/180.0])
-    ##
-    ##    names.append("LShoulderRoll")
-    ##    times.append([1.5,3.0,4.5])
-    ##    keys.append([3.2*math.pi/180.0,-2.3*math.pi/180.0,-2.5*math.pi/180.0])
-    ##
-    ##    names.append("LWristYaw")
-    ##    times.append([1.5,3.0,4.5])
-    ##    keys.append([64.5*math.pi/180.0,-45.5*math.pi/180.0,-82.2*math.pi/180.0])
-
-    names.append("HeadPitch")
-    times.append([1.5])
-    keys.append([-27.2 * math.pi / 180.0])
-
-    names.append("HeadYaw")
-    times.append([1.5, 3.0])
-    keys.append([0, 0])
-
-    names.append("LAnklePitch")
-    times.append([1.5,5.5])
-    keys.append([-33.9 * math.pi / 180.0,func_angle(-54.8)])
-
-    names.append("LAnkleRoll")
-    times.append([1.5,5.5])
-    keys.append([-0.6 * math.pi / 180.0,func_angle(0.4)])
-
-    # 左手握杆positionHitBall
-    names.append("LHand")
-    times.append([1.5])
-    keys.append([0.0])  # [0.0, 0.0]
-
-    names.append("LHipPitch")
-    times.append([1.5,5.5])
-    keys.append([-38.3 * math.pi / 180.0,func_angle(-49.3)])
-
-    names.append("LHipRoll")
-    times.append([1.5,5.5])
-    keys.append([0.4 * math.pi / 180.0,func_angle(0.3)])
-
-    names.append("LHipYawPitch")
-    times.append([1.5,5.5])
-    keys.append([-1.1 * math.pi / 180.0,func_angle(-1.1)])
-
-    names.append("LKneePitch")
-    times.append([1.5,5.5])
-    keys.append([61.6 * math.pi / 180.0,func_angle(95.9)])
-
-    names.append("RAnklePitch")
-    times.append([1.5,5.5])
-    keys.append([-34.5 * math.pi / 180.0,func_angle(-54.8)])
-
-    names.append("RAnkleRoll")
-    times.append([1.5,5.5])
-    keys.append([-0.4 * math.pi / 180.0,func_angle(-0.4)])
-
-    names.append("RHipPitch")
-    times.append([1.5,5.5])
-    keys.append([-42.9 * math.pi / 180.0,func_angle(-49.3)])
-
-    names.append("RHipRoll")
-    times.append([1.5,5.5])
-    keys.append([-0.6 * math.pi / 180.0,func_angle(-0.3)])
-
-    names.append("RHipYawPitch")
-    times.append([1.5,5.5])
-    keys.append([-1.1 * math.pi / 180.0,func_angle(-1.1)])
-
-    names.append("RKneePitch")
-    times.append([1.5,5.5])
-    keys.append([65.8 * math.pi / 180.0,func_angle(95.9)])
-
-    motionProxy.setMoveArmsEnabled(False, False)
-    motionProxy.angleInterpolation(names, keys, times, True)
-    # motionProxy
-
     joints_name = []
     angle = []
     move_time = []
-    #
-    # joints_name.append("RShoulderPitch")
-    # angle.append(
-    #     [func_angle(50.2)])
-    # move_time.append([1.0])
-    #
-    # joints_name.append("RShoulderRoll")
-    # angle.append(
-    #     [func_angle(-51.3)])
-    # move_time.append([1.0])
-    #
-    # joints_name.append("RElbowYaw")
-    # angle.append(
-    #     [func_angle(81.8)])
-    # move_time.append([1.0])
-    #
-    # joints_name.append("RElbowRoll")
-    # angle.append(
-    #     [func_angle(32.5)])
-    # move_time.append([1.0])
-    #
-    joints_name.append("RWristYaw")
-    angle.append(
-        [func_angle(60)])
-    move_time.append([0.2])
-    #
-    motionProxy.angleInterpolation(joints_name, angle, move_time, True)
 
+    joints_name.append("RShoulderPitch")
+    angle.append([func_angle(100), func_angle(15)])
+    # func_angle(5), func_angle(-5), func_angle(50), func_angle(91)])
+    move_time.append([2.5, 3.5])
+
+    joints_name.append("RShoulderRoll")
+    angle.append([func_angle(0), func_angle(-30), func_angle(-30), func_angle(13)])
+    # func_angle(1), func_angle(-60), func_angle(-65), func_angle(-17)])
+    move_time.append([1.5, 2, 5.5, 7])  # 3.5
+
+    joints_name.append("RElbowYaw")
+    angle.append([func_angle(119.5), func_angle(0)])
+    # func_angle(94.5), func_angle(40), func_angle(11), func_angle(66)])
+    move_time.append([5.5, 7])
+
+    joints_name.append("RElbowRoll")
+    angle.append([func_angle(2), func_angle(88.5)])
+    # func_angle(57.1), func_angle(34.5), func_angle(6), func_angle(3)])
+    move_time.append([3.5, 4.5])
+
+    joints_name.append("RWristYaw")
+    angle.append([func_angle(-10), func_angle(-25), func_angle(-50), func_angle(45), func_angle(15)])
+    # func_angle(60), func_angle(30), func_angle(35), func_angle(35)])
+    move_time.append([2, 2.5, 4.5, 7, 7.5])
+
+    # 脚步动作
+    joints_name.append("LHipYawPitch")
+    angle.append([func_angle(-0.2)])
+    move_time.append([1.08])
+
+    joints_name.append("LKneePitch")
+    angle.append([func_angle(52.8)])
+    move_time.append([1.08])
+
+    joints_name.append("LAnklePitch")
+    angle.append([func_angle(-30.3)])
+    move_time.append([1.08])
+
+    joints_name.append("LAnkleRoll")
+    angle.append([func_angle(-0.3)])
+    move_time.append([1.08])
+
+    joints_name.append("LHipPitch")
+    angle.append([func_angle(-33)])
+    move_time.append([1.08])
+
+    joints_name.append("LHipRoll")
+    angle.append([func_angle(0.4)])
+    move_time.append([1.08])
+
+    joints_name.append("RHipRoll")
+    angle.append([func_angle(0.4)])
+    move_time.append([1.08])
+
+    joints_name.append("RHipPitch")
+    angle.append([func_angle(-33)])
+    move_time.append([1.08])
+
+    joints_name.append("RHipYawPitch")
+    angle.append([func_angle(-0.2)])
+    move_time.append([1.08])
+
+    joints_name.append("RKneePitch")
+    angle.append([func_angle(52.8)])
+    move_time.append([1.08])
+
+    joints_name.append("RAnklePitch")
+    angle.append([func_angle(-30.3)])
+    move_time.append([1.08])
+
+    joints_name.append("RAnkleRoll")
+    angle.append([func_angle(-0.3)])
+    move_time.append([1.08])
+
+    # 头部动作
+    joints_name.append("HeadYaw")
+    angle.append([0.0])
+    move_time.append([1.08])
+
+    joints_name.append("HeadPitch")
+    angle.append([func_angle(-30)])
+    move_time.append([1.08])
+
+    motionProxy.setMoveArmsEnabled(False, False)
+    motionProxy.angleInterpolation(joints_name, angle, move_time, True)
 
 
 if __name__ == '__main__':
