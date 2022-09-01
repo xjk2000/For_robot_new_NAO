@@ -19,6 +19,7 @@ import motion
 import numpy as np
 import vision_definitions as vd
 from naoqi import ALProxy
+import publicApi
 
 # sys.path.append("/home/meringue/Softwares/pynaoqi-sdk/") #naoqi directory
 sys.path.append("./")
@@ -108,8 +109,7 @@ class VisualBasis(NaoConfig):
             self.frameArray = np.frombuffer(frame[6], dtype=np.uint8).reshape([frame[1], frame[0], frame[2]])
         except IndexError:
             print "get image failed!"
-        except TypeError:
-            print frame
+
     def getFrameArray(self):
         """
         得到当前帧
@@ -456,7 +456,6 @@ class DetectRedBall(VisualBasis):
         使用从相机获取的帧更新球数据。
         最后要实现上面的所有功能，在类中再定义一个函数，把之前实现的各个模块封装在一起
 
-        :param minS1:
         :param cameraID:
         :param client:
         :param standState: ("standInit", default), "standInit" or "standUp".
@@ -472,7 +471,7 @@ class DetectRedBall(VisualBasis):
         maxHSV2 = np.array([180, 255, 255])
         self.updateFrame(client)
         minDist = int(self.frameHeight / 20.0)
-        # minRadius = 5
+        minRadius = 5
         maxRadius = int(self.frameHeight / 12.0)
         if colorSpace == "BGR":
             grayFrame = self.__getChannelAndBlur(color)
@@ -483,7 +482,7 @@ class DetectRedBall(VisualBasis):
         # cv2.imshow("bin frame", grayFrame)
         # cv2.imwrite("bin_frame.jpg", grayFrame)
         # cv2.waitKey(20)
-        circles = self.__findCircles(grayFrame, minDist, 5, maxRadius)
+        circles = self.__findCircles(grayFrame, minDist, minRadius, maxRadius)
         circle = self.__selectCircle(circles)
         # print("circle = ", circle.shape)
         if circle.shape[0] == 0:
@@ -680,7 +679,7 @@ class StickDetect(VisualBasis):
         except:
             print("Error when saveing current frame!")
 
-    def updateStickData(self, client="test", minH=27, minS=55, minV=115,
+    def updateStickData(self, client="test", minH=27,minS=55,minV=115,
                         maxH=45, cropKeep=0.75,
                         morphology=True, savePreprocessImg=False):
         """
@@ -745,10 +744,10 @@ class StickDetect(VisualBasis):
 
         windowName = "slider for stick detection"
         cv2.namedWindow(windowName)
-        cv2.createTrackbar("minH", windowName, 20, 150, __nothing)
-        cv2.createTrackbar("minS", windowName, 30, 180, __nothing)
-        cv2.createTrackbar("minV", windowName, 35, 150, __nothing)
-        cv2.createTrackbar("maxH", windowName, 30, 100, __nothing)
+        cv2.createTrackbar("minH", windowName, 27, 45, __nothing)
+        cv2.createTrackbar("minS", windowName, 55, 75, __nothing)
+        cv2.createTrackbar("minV", windowName, 115, 150, __nothing)
+        cv2.createTrackbar("maxH", windowName, 45, 70, __nothing)
         while 1:
             self.updateFrame(client)
             minH = cv2.getTrackbarPos("minH", windowName)
@@ -757,7 +756,7 @@ class StickDetect(VisualBasis):
             maxH = cv2.getTrackbarPos("maxH", windowName)
             minHSV = np.array([minH, minS, minV])
             maxHSV = np.array([maxH, 255, 255])
-            self.updateStickData(client, minH=minH, minS=minS, minV=minV, maxH=maxH, cropKeep=1, savePreprocessImg=True)
+            self.updateStickData(client, minH=minH,minS=minS,minV=minV,maxH=maxH,cropKeep=0.75, savePreprocessImg=True)
             cv2.imshow(windowName, self._frameBin)
             self.showStickPosition()
             print self.stickAngle * 180 / math.pi
@@ -785,7 +784,7 @@ class LandMarkDetect(NaoConfig):
 
     def updateLandMarkData(self, client="landMark"):
         """
-        更新地标信息
+        update landMark information
 
         Args:
             client: client name
@@ -823,7 +822,7 @@ class LandMarkDetect(NaoConfig):
 
     def getLandMarkData(self):
         """
-        获取地标信息。
+        get landMark information.
 
         Return:
             a list of disX, disY, dis, and yaw angle.
@@ -841,14 +840,13 @@ class LandMarkDetect(NaoConfig):
 
 
 if __name__ == '__main__':
-    from BasicData import IP
-
-    PORT = 9559
+    IP = "169.254.132.131"
+    PORT=9559
     # IP = "169.254.67.213"
     # IP = "169.254.143.164"
 
     visualBasis = VisualBasis(IP, cameraId=vd.kTopCamera, resolution=vd.kVGA)
-    ballDetect = DetectRedBall(IP, cameraId=vd.kBottomCamera, resolution=vd.kVGA, writeFrame=True)
+    ballDetect = DetectRedBall(IP,cameraId=vd.kTopCamera, resolution=vd.kVGA, writeFrame=True)
     stickDetect = StickDetect(IP, cameraId=vd.kTopCamera, resolution=vd.kVGA, writeFrame=True)
     landMarkDetect = LandMarkDetect(IP)
     motionProxy = ALProxy("ALMotion", IP, PORT)
@@ -871,31 +869,29 @@ if __name__ == '__main__':
     # visualBasis.postureProxy.goToPosture("StandInit", 0.5)
 
     motionProxy.wakeUp()
-    import publicApi
     publicApi.close_pole()
-    # motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.5, 0.5)
-    stickDetect.slider("qwe")
-    # ballDetect.sliderHSV("wer")
+    # motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.05, 0.1)
+    # stickDetect.slider("qwe")
+    ballDetect.sliderHSV("wer")
     #
-
     # while True:
     #     landMarkDetect.updateLandMarkData("123")
-    #     print landMarkDetect.getLandMarkData()
-    # # while 1:
-    # #     time1 = time.time()
-    #     ballDetect.updateBallData(client="mm2", colorSpace="HSV", fitting=True, minS1=159, minV1=79, maxH1=2, minH2=172)
-    # #     # print(ballDetect.getBallInfoInImage())
-    # #     time2 = time.time()
-    # #     # print("update data time = ", time2-time1)
-    # #     print ballDetect.ballData
+    #     landMarkDetect.showLandMarkData()
+    # while 1:
+    #     time1 = time.time()
+    #     ballDetect.updateBallData(client="mm2", colorSpace="HSV", fitting=True, minS1=180, minV1=33, maxH1=2, minH2=175)
+    #     # print(ballDetect.getBallInfoInImage())
+    #     time2 = time.time()
+    #     # print("update data time = ", time2-time1)
+    #     print ballDetect.ballData
     #     print ballDetect.ballPosition
-    #
-    # # while 1:
-    # #     time1 = time.time()
-    #     stickDetect.updateStickData(client="str1",minH=5,minS=60,minV=48,maxH=42,cropKeep=0.45)
-    # #     # print(ballDetect.getBallInfoInImage())
-    # #     time2 = time.time()
-    # #     # print("update data time = ", time2-time1)
+
+    # while 1:
+    #     time1 = time.time()
+    #     stickDetect.updateStickData(client="str1",minH=14,minS=50,minV=139,maxH=61,cropKeep=0.75)
+    #     # print(ballDetect.getBallInfoInImage())
+    #     time2 = time.time()
+    #     # print("update data time = ", time2-time1)
     #     print stickDetect.stickAngle*180/math.pi
 
     # while 1:
