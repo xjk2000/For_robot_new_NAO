@@ -46,9 +46,8 @@ class NaoConfig(object):
             self.tts = ALProxy("ALTextToSpeech", self._IP, self._PORT)
             self.memoryProxy = ALProxy("ALMemory", self._IP, self._PORT)
             self.landMarkProxy = ALProxy("ALLandMarkDetection", self._IP, self._PORT)
-        except Exception, e:
+        except:
             print("Error when configuring the NAO!")
-            print(str(e))
             exit(1)
 
 
@@ -107,9 +106,10 @@ class VisualBasis(NaoConfig):
             self.frameChannels = frame[2]
             self.frameArray = np.frombuffer(frame[6], dtype=np.uint8).reshape([frame[1], frame[0], frame[2]])
         except IndexError:
-            print "get image failed!"
+            print("get image failed!")
         except TypeError:
-            print frame
+            print(frame)
+
     def getFrameArray(self):
         """
         得到当前帧
@@ -125,7 +125,7 @@ class VisualBasis(NaoConfig):
         显示当前帧图像。
         """
         if self.frameArray is None:
-            print "please get an image from Nao with the method updateFrame()"
+            print("please get an image from Nao with the method updateFrame()")
         else:
             cv2.imshow("current frame", self.frameArray)
 
@@ -133,10 +133,10 @@ class VisualBasis(NaoConfig):
         """
         打印当前帧数据。
         """
-        print "frame height = ", self.frameHeight
-        print "frame width = ", self.frameWidth
-        print "frame channels = ", self.frameChannels
-        print "frame shape = ", self.frameArray.shape
+        print("frame height = ", self.frameHeight)
+        print("frame width = ", self.frameWidth)
+        print("frame channels = ", self.frameChannels)
+        print("frame shape = ", self.frameArray.shape)
 
     def saveFrame(self, framePath):
         """
@@ -146,7 +146,7 @@ class VisualBasis(NaoConfig):
         :return:
         """
         cv2.imwrite(framePath, self.frameArray)
-        print "当前帧图像已保存在", framePath
+        print("当前帧图像已保存在", framePath)
 
     def setParam(self, paramName=None, paramValue=None):
         raise NotImplementedError
@@ -166,7 +166,7 @@ class DetectRedBall(VisualBasis):
     def setAllParamsToDefault(self):
         raise NotImplementedError
 
-    def __init__(self, IP, PORT=9559, cameraId=vd.kBottomCamera, resolution=vd.kVGA,
+    def __init__(self, IP, PORT=9559, cameraId=vd.kTopCamera, resolution=vd.kVGA,
                  writeFrame=False):
         """
         初始化各种参数
@@ -229,8 +229,7 @@ class DetectRedBall(VisualBasis):
             channelG[channelG > 255] = 255
             return np.uint8(np.round(channelG))
         else:
-            print "这尼玛啥子颜色！"
-            print "给老子用RGB 红 绿 蓝!!"
+            print "使用rgb"
             return None
 
     def __binImageHSV(self, minHSV1, maxHSV1, minHSV2, maxHSV2):
@@ -248,7 +247,7 @@ class DetectRedBall(VisualBasis):
             frameArray = self.frameArray.copy()
             imgHSV = cv2.cvtColor(frameArray, cv2.COLOR_BGR2HSV)
         except:
-            print "no image detected!"
+            print("no image detected!")
         else:
             frameBin1 = cv2.inRange(imgHSV, minHSV1, maxHSV1)
             frameBin2 = cv2.inRange(imgHSV, minHSV2, maxHSV2)
@@ -350,7 +349,7 @@ class DetectRedBall(VisualBasis):
         try:
             cameraDirection = bottomCameraDirection[standState]
         except KeyError:
-            print "错误！未知的standState，请检查standState的值！"
+            print("错误！未知的standState，请检查standState的值！")
         else:
             if self.ballData["radius"] == 0:
                 self.ballPosition = {"disX": 0, "disY": 0, "angle": 0}
@@ -449,9 +448,7 @@ class DetectRedBall(VisualBasis):
         except:
             print("Error when saveing current frame!")
 
-    def updateBallData(self, client="python_client", standState="standInit", color="red",
-                       colorSpace="BGR", fitting=False, minS1=134, minV1=50, maxH1=4, minH2=166,
-                       cameraID=1, saveFrameBin=False):
+    def updateBallData(self, client="python_client", standState="standInit", fitting=False):
         """
         使用从相机获取的帧更新球数据。
         最后要实现上面的所有功能，在类中再定义一个函数，把之前实现的各个模块封装在一起
@@ -466,33 +463,92 @@ class DetectRedBall(VisualBasis):
         :param saveFrameBin:是否将预处理的帧保存在类中。
         :return:带有球数据的字典。例如：{"centerX":0, "centerY":0, "radius":0} 保存在当前类之中。
         """
-        minHSV1 = np.array([0, minS1, minV1])
-        maxHSV1 = np.array([maxH1, 255, 255])
-        minHSV2 = np.array([minH2, minS1, minV1])
-        maxHSV2 = np.array([180, 255, 255])
+        # """ minHSV1 = np.array([0, minS1, minV1])
+        # maxHSV1 = np.array([maxH1, 255, 255])
+        # minHSV2 = np.array([minH2, minS1, minV1])
+        # maxHSV2 = np.array([180, 255, 255]) """
         self.updateFrame(client)
         minDist = int(self.frameHeight / 20.0)
         # minRadius = 5
         maxRadius = int(self.frameHeight / 12.0)
-        if colorSpace == "BGR":
-            grayFrame = self.__getChannelAndBlur(color)
+        # if colorSpace == "BGR":
+        #     grayFrame = self.__getChannelAndBlur(color)
+        # else:
+        #     grayFrame = self.__binImageHSV(minHSV1, maxHSV1, minHSV2, maxHSV2)
+        # if saveFrameBin:
+        #     self._frameBin = grayFrame.copy()
+        # # cv2.imshow("bin frame", grayFrame)
+        # # cv2.imwrite("bin_frame.jpg", grayFrame)
+        # # cv2.waitKey(20)
+        # circles = self.__findCircles(grayFrame, minDist, 5, maxRadius)
+        # circle = self.__selectCircle(circles)
+        img = self.frameArray
+        gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        _, mask = cv2.threshold(gray_image, 200, 255, cv2.THRESH_BINARY)  # 找亮光位置
+        # 图像修复，用邻近的像素替换那些坏标记，使其看起来像是邻居，作用？
+        # img = cv2.inpaint(img, mask, 10, cv2.INPAINT_TELEA)#cv2.INPAINT_NS
+        hue_image = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        myimg = hue_image
+        low_range = np.array([160, 43, 46])
+        high_range = np.array([180, 255, 255])
+        low_range2 = np.array([0, 43, 46])
+        high_range2 = np.array([10, 255, 255])
+        mask = cv2.inRange(hue_image, low_range, high_range)
+        mask2 = cv2.inRange(hue_image, low_range2, high_range2)
+        # 合并两个颜色区间的mask
+        mask = cv2.bitwise_xor(mask, mask2)
+
+        lower_green = np.array([35, 43, 46])
+        upper_green = np.array([88, 255, 255])  # 77-->88能识别老旧的绿地面
+
+        mask = cv2.erode(mask, np.ones((2, 2)), iterations=1)  # ones(3,3)会腐蚀4米外的红球
+        dilated = cv2.dilate(mask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)), iterations=2)
+        if cv2.__version__.split(".")[0] == "2":
+            contours, hierarchy = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         else:
-            grayFrame = self.__binImageHSV(minHSV1, maxHSV1, minHSV2, maxHSV2)
-        if saveFrameBin:
-            self._frameBin = grayFrame.copy()
-        # cv2.imshow("bin frame", grayFrame)
-        # cv2.imwrite("bin_frame.jpg", grayFrame)
-        # cv2.waitKey(20)
-        circles = self.__findCircles(grayFrame, minDist, 5, maxRadius)
-        circle = self.__selectCircle(circles)
+            img2, contours, hierarchy = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+        maxball_x = 0
+        maxball_y = 0
+        maxball_r = 0
+        maxball_s = 0
+        for i, c in enumerate(contours):
+            M = cv2.moments(c)
+            center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+            s_cnts = cv2.contourArea(c)
+            # 最小包围盒内，redball面积的占比
+            (x, y), radius = cv2.minEnclosingCircle(c)
+            R_ball = s_cnts / (math.pi * radius * radius)
+            x = int(x)
+            y = int(y)
+            # redball周边的绿色面积占比
+            radius = int(radius)
+            offset = 4 * radius
+            if y - offset < 0: y = offset
+            if x - offset < 0: x = offset
+            if y + offset > 480: y = 480 - offset
+            if x > offset > 640: x = 640 - offset
+            rect = img[y - offset:y + offset, x - offset:x + offset]
+            hue_rect = cv2.cvtColor(rect, cv2.COLOR_BGR2HSV)
+            floor = cv2.inRange(hue_rect, lower_green, upper_green)
+
+            s = cv2.sumElems(floor)
+            R_land = s[0] / 255 / (4 * offset * offset)
+            if R_land > 0.5 and R_ball > 0.5 and radius > 1:
+                if R_ball > maxball_s:  # (radius>maxball_r):#
+                    maxball_s = R_ball
+                    maxball_x, maxball_y = center
+                    maxball_r = radius
+
         # print("circle = ", circle.shape)
-        if circle.shape[0] == 0:
+        if maxball_s == 0:  # if circle.shape[0] == 0:
             # print("no ball")
             self.ballData = {"centerX": 0, "centerY": 0, "radius": 0}
             self.ballPosition = {"disX": 0, "disY": 0, "angle": 0}
         else:
-            circle = circle.reshape([-1, 3])
-            self.ballData = {"centerX": circle[0][0], "centerY": circle[0][1], "radius": circle[0][2]}
+            # circle = circle.reshape([-1, 3])
+            # self.ballData = {"centerX": circle[0][0], "centerY": circle[0][1], "radius": circle[0][2]}
+            self.ballData = {"centerX": maxball_x, "centerY": maxball_y, "radius": maxball_r}
             if fitting:
                 self.__updateBallPositionFitting(standState=standState)
             else:
@@ -543,7 +599,7 @@ class DetectRedBall(VisualBasis):
                        self.ballData["radius"], (250, 150, 150), 2)
             cv2.circle(frameArray, (self.ballData["centerX"], self.ballData["centerY"]),
                        2, (50, 250, 50), 3)
-            # print frameArray
+            # print(frameArray)
             cv2.imshow("ball position", frameArray)
 
     def sliderHSV(self, client):
@@ -575,7 +631,7 @@ class DetectRedBall(VisualBasis):
             maxHSV2 = np.array([180, 255, 255])
             self.updateBallData(client, colorSpace="HSV", fitting=True, minS1=minS1, minV1=minV1, maxH1=maxH1,
                                 minH2=minH2, saveFrameBin=True)
-            print self.ballPosition
+            print(self.ballPosition)
             cv2.imshow(windowName, self._frameBin)
             self.showBallPosition()
             k = cv2.waitKey(10) & 0xFF
@@ -680,44 +736,60 @@ class StickDetect(VisualBasis):
         except:
             print("Error when saveing current frame!")
 
-    def updateStickData(self, client="test", minH=27, minS=55, minV=115,
-                        maxH=45, cropKeep=0.75,
-                        morphology=True, savePreprocessImg=False):
-        """
-        更新来自指定相机的黄杆数据。
-
-        :param client: client name
-        :param minH:
-        :param minS:
-        :param minV:
-        :param maxH:
-        :param cropKeep:修剪比例(> = 0.5)
-        :param morphology:(True, default) 腐蚀 and 膨胀
-        :param savePreprocessImg:保存不保存预处理的图像
-        :return:
-        """
-        minHSV = np.array([minH, minS, minV])
-        maxHSV = np.array([maxH, 255, 255])
+    def updateStickData(self, client="test"):
+        # """ minHSV = np.array([minH, minS, minV])
+        # maxHSV = np.array([maxH, 255, 255]) """
         self.updateFrame(client)
         minPerimeter = self.frameHeight / 8.0
         minArea = self.frameHeight * self.frameWidth / 1000.0
-        frameBin = self.__preprocess(minHSV, maxHSV, cropKeep, morphology)
-        if savePreprocessImg:
-            self._frameBin = frameBin.copy()
-        rect = self.__findStick(frameBin, minPerimeter, minArea)
-        if rect == []:
-            self.boundRect = []
-            self.stickAngle = 0.0
+        # """ frameBin = self.__preprocess(minHSV, maxHSV, cropKeep, morphology)
+        # if savePreprocessImg:
+        #     self._frameBin = frameBin.copy()
+        # rect = self.__findStick(frameBin, minPerimeter, minArea) """
+        img = self.frameArray
+        hue_image = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        low_range = np.array([11, 150, 20])  # 通过实测，调整了S的范围
+        high_range = np.array([34, 255, 255])
+        mask = cv2.inRange(hue_image, low_range, high_range)
+        mask = cv2.erode(mask, np.ones((5, 5)), iterations=1)
+        dilated = cv2.dilate(mask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)), iterations=2)
+        dilated = cv2.GaussianBlur(dilated, (9, 9), 0)
+        if cv2.__version__.split(".")[0] == "2":
+            contours, hierarchy = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         else:
-            self.boundRect = rect
-            centerX = rect[0] + rect[2] / 2
-            width = self.frameWidth * 1.0
-            self.stickAngle = (width / 2 - centerX) / width * self.cameraYawRange
-            cameraPosition = self.motionProxy.getPosition("Head", 2, True)
-            cameraY = cameraPosition[5]
-            self.stickAngle += cameraY
-            if self.writeFrame:
-                self.__writeFrame()
+            img2, contours, hierarchy = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        for i, c in enumerate(contours):
+            M = cv2.moments(c)
+            center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+            s_cnts = cv2.contourArea(c)
+            # 最小包围盒内，redball面积的占比
+            x, y, w, h = cv2.boundingRect(c)
+            if w < h / 2:
+                # return np.array([x+w/2, y+h-3])  # 计算出矩形底边的中心点坐标
+                centerX = x + w / 2
+                width = self.frameWidth * 1.0
+                self.stickAngle = (width / 2 - centerX) / width * self.cameraYawRange
+                cameraPosition = self.motionProxy.getPosition("Head", 2, True)
+                cameraY = cameraPosition[5]
+                self.stickAngle += cameraY
+                if self.writeFrame:
+                    self.__writeFrame()
+                break
+            else:
+                self.stickAngle = 0.0
+        # """ if rect == []:
+        #     self.boundRect = []
+        #     self.stickAngle = 0.0
+        # else:
+        #     self.boundRect = rect
+        #     centerX =x+w/2# rect[0] + rect[2] / 2
+        #     width = self.frameWidth * 1.0
+        #     self.stickAngle = (width / 2 - centerX) / width * self.cameraYawRange
+        #     cameraPosition = self.motionProxy.getPosition("Head", 2, True)
+        #     cameraY = cameraPosition[5]
+        #     self.stickAngle += cameraY
+        #     if self.writeFrame:
+        #         self.__writeFrame() """
 
     def showStickPosition(self):
         """
@@ -760,7 +832,7 @@ class StickDetect(VisualBasis):
             self.updateStickData(client, minH=minH, minS=minS, minV=minV, maxH=maxH, cropKeep=1, savePreprocessImg=True)
             cv2.imshow(windowName, self._frameBin)
             self.showStickPosition()
-            print self.stickAngle * 180 / math.pi
+            print(self.stickAngle * 180 / math.pi)
             k = cv2.waitKey(10) & 0xFF
             if k == 27:
                 break
@@ -848,7 +920,7 @@ if __name__ == '__main__':
     # IP = "169.254.143.164"
 
     visualBasis = VisualBasis(IP, cameraId=vd.kTopCamera, resolution=vd.kVGA)
-    ballDetect = DetectRedBall(IP, cameraId=vd.kBottomCamera, resolution=vd.kVGA, writeFrame=True)
+    ballDetect = DetectRedBall(IP, cameraId=vd.kTopCamera, resolution=vd.kVGA, writeFrame=True)
     stickDetect = StickDetect(IP, cameraId=vd.kTopCamera, resolution=vd.kVGA, writeFrame=True)
     landMarkDetect = LandMarkDetect(IP)
     motionProxy = ALProxy("ALMotion", IP, PORT)
@@ -872,23 +944,30 @@ if __name__ == '__main__':
 
     motionProxy.wakeUp()
     import publicApi
+
     publicApi.close_pole()
     # motionProxy.angleInterpolationWithSpeed("HeadPitch", 0.5, 0.5)
-    stickDetect.slider("qwe")
+    # stickDetect.slider("qwe")
     # ballDetect.sliderHSV("wer")
+    while True:
+        # stickDetect.updateStickData()
+        # print stickDetect.stickAngle
+        ballDetect.updateBallData("aaa")
+        print ballDetect.ballPosition
+
     #
 
     # while True:
     #     landMarkDetect.updateLandMarkData("123")
-    #     print landMarkDetect.getLandMarkData()
+    #     print(landMarkDetect.getLandMarkData()
     # # while 1:
     # #     time1 = time.time()
     #     ballDetect.updateBallData(client="mm2", colorSpace="HSV", fitting=True, minS1=159, minV1=79, maxH1=2, minH2=172)
     # #     # print(ballDetect.getBallInfoInImage())
     # #     time2 = time.time()
     # #     # print("update data time = ", time2-time1)
-    # #     print ballDetect.ballData
-    #     print ballDetect.ballPosition
+    # #     print(ballDetect.ballData
+    #     print(ballDetect.ballPosition
     #
     # # while 1:
     # #     time1 = time.time()
@@ -896,7 +975,7 @@ if __name__ == '__main__':
     # #     # print(ballDetect.getBallInfoInImage())
     # #     time2 = time.time()
     # #     # print("update data time = ", time2-time1)
-    #     print stickDetect.stickAngle*180/math.pi
+    #     print(stickDetect.stickAngle*180/math.pi
 
     # while 1:
     #     stickDetect.updateStickData(client="xxx")
@@ -910,14 +989,14 @@ if __name__ == '__main__':
     # """
     #
     # """
-    # print "start collecting..."
+    # print("start collecting..."
     # for i in range(10):
     # 	imgName = "stick_" + str(i+127) + ".jpg"
     # 	imgDir = os.path.join("stick_images", imgName)
     # 	visualBasis.updateFrame()
     # 	visualBasis.showFrame(timeMs=1000)
     # 	visualBasis.saveFrame(imgDir)
-    # 	print "saved in ", imgDir
+    # 	print("saved in ", imgDir
     # 	time.sleep(5)
     # """
     #
@@ -931,7 +1010,7 @@ if __name__ == '__main__':
     #
     # """
     # dataList = visualBasis._memoryProxy.getDataList("camera")
-    # print dataList
+    # print(dataList
     # """
     #
     # """
